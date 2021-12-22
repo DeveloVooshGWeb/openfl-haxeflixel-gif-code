@@ -17,47 +17,47 @@ import haxe.ValueException;
 import flixel.system.FlxGifAsset;
 import haxe.io.Bytes;
 
+@:access(openfl.utils.ByteArrayData)
 class FlxGifSprite extends FlxSprite
 {
 	public var gif:Gif;
 	public var player:GifPlayer;
 	public var ready:Bool = false;
 
-	public function new(GifThing:FlxGifAsset, X:Float = 0, Y:Float = 0, Width:Int = -1, Height:Int = -1)
+	public function new(GifThing:FlxGifAsset, X:Float = 0, Y:Float = 0, Width:Int = 0, Height:Int = 0)
 	{
 		super(X, Y);
-		if (Width != -1)
+		if (Width != 0)
 		{
 			setGraphicSize(Width, Math.floor(height));
 		}
 		updateHitbox();
-		if (Height != -1)
+		if (Height != 0)
 		{
 			setGraphicSize(Math.floor(width), Height);
 		}
 		updateHitbox();
-		if (FlxGifAsset != null)
+		if (GifThing == null)
+			dumb();
+		if ((GifThing is String))
 		{
-			if (Std.is(FlxGifAsset, String))
-			{
-				if (!Assets.exists(FlxGifAsset, BINARY))
-					dumb();
-				else
-					Assets.loadBytes(FlxGifAsset).onComplete(function(byteArr:ByteArray)
-					{
-						parseByteArr(byteArr);
-					}).onError(function(msg)
-					{
-						throw new ValueException("Kill Yourself :3 Bytes Wont Load!");
-					});
-			}
-			else if (Std.is(FlxGifAsset, ByteArray))
-				parseByteArr(FlxGifAsset);
-			else if (Std.is(FlxGifAsset, Bytes))
-				parseBytes(FlxGifAsset);
-			else
+			if (!Assets.exists(GifThing, BINARY))
 				dumb();
+			else
+				Assets.loadBytes(GifThing).onComplete(function(byteArr:ByteArray)
+				{
+					parseByteArr(byteArr);
+				}).onError(function(msg)
+				{
+					throw new ValueException("Kill Yourself :3 Bytes Wont Load!");
+				});
 		}
+		else if ((GifThing is ByteArrayData))
+			parseByteArr(GifThing);
+		else if ((GifThing is Bytes))
+			parseBytes(GifThing);
+		else
+			dumb();
 	}
 	
 	public function dumb()
